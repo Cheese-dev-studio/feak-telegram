@@ -1,56 +1,58 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: "*" }
-});
+const io = new Server(server);
 
-// Хранилище сообщений в памяти сервера
-let messages = [];
+app.use(express.static('public'));
 
-// Раздача статических файлов (index.html)
-app.use(express.static(path.join(__dirname, 'public')));
+// Храним сообщения отдельно для каждой комнаты
+const roomMessages = {};
 
 io.on('connection', (socket) => {
-  console.log('Новое подключение:', socket.id);
+    let currentRoom = null;
 
-  // Отправляем подключившемуся пользователю историю сообщений
-  socket.emit('init_messages', messages);
+    socket.on('join_room', ({ name, room }) => {
+        currentRoom = room || 'general';
+        socket.join(currentRoom);
 
-  // Обработка отправки нового сообщения
-  socket.on('send_message', (data) => {
-    const msg = {
-      author: data.author || 'Аноним',
-      text: data.text || '',
-      ts: Date.now()
-    };
-    messages.push(msg);
+        if (!roomMessages[currentRoom]) {
+            roomMessages[currentRoom] = [];
+        }
 
-    // Ограничиваем историю 200 сообщениями
-    if (messages.length > 200) {
-      messages.shift();
-    }
+        // Отправляем историю сообщений только этой комнаты
+        socket.emit('init_messages', roomMessages[currentRoom]);
+    });
 
-    // Рассылаем новое сообщение ВСЕМ подключенным клиентам
-    io.emit('new_message', msg);
-  });
+    socket.on('send_message', (data) => {
+        if (!currentRoom) return;
 
-  // Очистка истории сообщений
-  socket.on('clear_messages', () => {
-    messages = [];
-    io.emit('init_messages', messages);
-  });
+        const msgData = {
+            author: data.author,
+            text: data.text,
+            ts: Date.now()
+        };
 
-  socket.on('disconnect', () => {
-    console.log('Пользователь отключился:', socket.id);
-  });
+        if (!roomMessages[currentRoom]) {
+            roomMessages[currentRoom] = [];
+        }
+        roomMessages[currentRoom].push(msgData);
+
+        // Отправляем сообщение ТОЛЬКО участникам этой комнаты
+        io.to(currentRoom).emit('new_message', msgData);
+    });
+
+    socket.on('clear_messages', () => {
+        if (currentRoom) {
+            roomMessages[currentRoom] = [];
+            io.to(currentRoom).emit('init_messages', []);
+        }
+    });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
+    console.log(`Сервер запущен на порту ${PORT}`);
 });

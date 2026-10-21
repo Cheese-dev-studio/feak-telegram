@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Simple Chat (Server)</title>
+<title>Feak Telegram Rooms</title>
 <script src="/socket.io/socket.io.js"></script>
 <style>
     :root {
@@ -185,18 +185,19 @@
 <body>
 
 <div class="name-gate" id="nameGate">
-    <div style="font-weight:bold; font-size:18px; margin-bottom:4px;">Как вас зовут?</div>
+    <div style="font-weight:bold; font-size:18px; margin-bottom:4px;">Вход в чат</div>
     <input type="text" id="nameInput" placeholder="Ваше имя" maxlength="30">
-    <button id="nameSubmit">Войти в чат</button>
+    <input type="text" id="roomInput" placeholder="Название комнаты / секретный код" maxlength="30">
+    <button id="nameSubmit">Войти</button>
     <div id="nameError" style="color:#ff6b6b; font-size:13px;"></div>
 </div>
 
 <div class="chat-container" id="chatContainer">
     <div class="chat-header">
-        <span><span class="status-dot" id="statusDot"></span>Общий чат</span>
+        <span><span class="status-dot" id="statusDot"></span>Комната: <span id="roomLabel" style="color:#52b8ff;"></span></span>
         <div class="header-actions">
             <span id="meLabel" style="font-weight:normal; color: var(--text-secondary); font-size:13px;"></span>
-            <button class="header-btn" id="changeNameBtn">Сменить имя</button>
+            <button class="header-btn" id="changeNameBtn">Сменить комнату</button>
             <button class="header-btn" id="clearChatBtn" title="Очистить историю">Очистить</button>
         </div>
     </div>
@@ -212,13 +213,16 @@
 <script>
 (function () {
     const NAME_KEY = "simple_chat_display_name";
+    const ROOM_KEY = "simple_chat_room_name";
     const socket = io();
 
     let allMessages = [];
     let myName = localStorage.getItem(NAME_KEY) || "";
+    let myRoom = localStorage.getItem(ROOM_KEY) || "";
 
     const nameGate = document.getElementById("nameGate");
     const nameInput = document.getElementById("nameInput");
+    const roomInput = document.getElementById("roomInput");
     const nameSubmit = document.getElementById("nameSubmit");
     const nameError = document.getElementById("nameError");
     const chatContainer = document.getElementById("chatContainer");
@@ -227,6 +231,7 @@
     const userInput = document.getElementById("userInput");
     const sendButton = document.getElementById("sendButton");
     const meLabel = document.getElementById("meLabel");
+    const roomLabel = document.getElementById("roomLabel");
     const changeNameBtn = document.getElementById("changeNameBtn");
     const clearChatBtn = document.getElementById("clearChatBtn");
     const statusDot = document.getElementById("statusDot");
@@ -247,36 +252,45 @@
         return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     }
 
-    function enterChat(name) {
+    function enterChat(name, room) {
         myName = name;
+        myRoom = room;
         localStorage.setItem(NAME_KEY, name);
+        localStorage.setItem(ROOM_KEY, room);
+        
         nameGate.style.display = "none";
         chatContainer.style.display = "flex";
         meLabel.textContent = "вы: " + name;
-        renderMessages();
+        roomLabel.textContent = room;
+
+        socket.emit("join_room", { name: name, room: room });
     }
 
     nameSubmit.addEventListener("click", () => {
-        const v = nameInput.value.trim();
-        if (!v) {
+        const name = nameInput.value.trim();
+        const room = roomInput.value.trim();
+
+        if (!name) {
             nameError.textContent = "Введите имя";
             return;
         }
-        enterChat(v);
-    });
+        if (!room) {
+            nameError.textContent = "Введите название комнаты";
+            return;
+        }
 
-    nameInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") nameSubmit.click();
+        enterChat(name, room);
     });
 
     changeNameBtn.addEventListener("click", () => {
         chatContainer.style.display = "none";
         nameGate.style.display = "flex";
         nameInput.value = myName;
+        roomInput.value = myRoom;
     });
 
     clearChatBtn.addEventListener("click", () => {
-        if (confirm("Вы уверены, что хотите очистить всю историю чата на сервере?")) {
+        if (confirm("Вы уверены, что хотите очистить всю историю в этой комнате?")) {
             socket.emit("clear_messages");
         }
     });
@@ -312,9 +326,11 @@
         userInput.value = "";
     }
 
-    // События Socket.IO
     socket.on("connect", () => {
         statusDot.classList.add("online");
+        if (myName && myRoom) {
+            socket.emit("join_room", { name: myName, room: myRoom });
+        }
     });
 
     socket.on("disconnect", () => {
@@ -336,8 +352,8 @@
         if (e.key === "Enter") sendMessage();
     });
 
-    if (myName) {
-        enterChat(myName);
+    if (myName && myRoom) {
+        enterChat(myName, myRoom);
     }
 })();
 </script>
