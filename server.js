@@ -31,8 +31,7 @@ io.on('connection', (socket) => {
 
         const msgData = {
             author: data.author,
-            text: data.text || "",
-            image: data.image || null,
+            text: data.text,
             ts: Date.now()
         };
 
