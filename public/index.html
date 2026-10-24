@@ -203,10 +203,11 @@
         }
 
         .contact {
-            padding: 15px 20px;
+            padding: 20px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             cursor: pointer;
             transition: background-color 0.2s;
+
         }
 
         .contact:hover {
@@ -220,15 +221,21 @@
             margin-right: 10px;
             vertical-align: middle;
         }
+
+        .but-ton10{
+            background-color: #17212b;
+            border: none;
+            width: 300px;
+        }
 </style>
 </head>
 <body>
 
     <div class="sidebar" id="sidebar1">
         <div class="sidebar-header">Контакты</div>
-        <div class="contact" id="canal1"><img src="https://via.placeholder.com/40" alt="Cheese" class="contact-avatar" id="avatar1"> Cheese</div>
-        <div class="contact" id="canal2"><img src="https://via.placeholder.com/40" alt="User2" class="contact-avatar" id="avatar2"> 𝒟𝒶𝓁𝑒𝓇</div>
-        <div class="contact" id="canal3"><img src="https://via.placeholder.com/40" alt="User3" class="contact-avatar" id="avatar3"> Jav0h1r</div>
+        <button class="but-ton10" id="button10"><div class="contact" id="canal1"><img src="https://via.placeholder.com/40" alt="Cheese" class="contact-avatar" id="avatar1"> Cheese</div></button>
+        <button class="but-ton10" id="button11"><div class="contact" id="canal2"><img src="https://via.placeholder.com/40" alt="User2" class="contact-avatar" id="avatar2"> 𝒟𝒶𝓁𝑒𝓇</div></button>
+        <button class="but-ton10" id="button12"><div class="contact" id="canal3"><img src="https://via.placeholder.com/40" alt="User3" class="contact-avatar" id="avatar3"> Jav0h1r</div></button>
     </div>
 
 <div class="name-gate" id="nameGate">
@@ -289,6 +296,9 @@
     const avatar1 = document.getElementById("avatar1");
     const avatar2 = document.getElementById("avatar2");
     const avatar3 = document.getElementById("avatar3");
+    const button10 = document.getElementById("button10");
+    const button11 = document.getElementById("button11");
+    const button12 = document.getElementById("button12");
 
     function escapeHtml(str) {
         const div = document.createElement("div");
@@ -314,6 +324,9 @@
         
         nameGate.style.display = "none";
         chatContainer.style.display = "flex";
+        button10.style.display = "flex";
+        button11.style.display = "flex";
+        button12.style.display = "flex";
         sidebar1.style.display = "flex";
         canal1.style.display = "flex";
         canal2.style.display = "flex";
@@ -353,6 +366,9 @@
         avatar1.style.display = "none";
         avatar2.style.display = "none";
         avatar3.style.display = "none";
+        button10.style.display = "none";
+        button11.style.display = "none";
+        button12.style.display = "none";
         nameInput.value = myName;
         roomInput.value = myRoom;
     });
