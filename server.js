@@ -56,3 +56,21 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
 });
+
+socket.on('send_message', (data) => {
+        if (!currentRoom) return;
+
+        const msgData = {
+            author: data.author,
+            text: data.text || "",
+            image: data.image || null,
+            ts: Date.now()
+        };
+
+        if (!roomMessages[currentRoom]) {
+            roomMessages[currentRoom] = [];
+        }
+        roomMessages[currentRoom].push(msgData);
+
+        io.to(currentRoom).emit('new_message', msgData);
+    });

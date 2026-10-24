@@ -27,7 +27,6 @@
         overflow: hidden;
     }
 
-    /* Экран ввода имени */
     .name-gate {
         display: flex;
         flex-direction: column;
@@ -71,7 +70,6 @@
         font-size: 15px;
     }
 
-    /* Главный макет (Сайдбар + Чат) */
     .app-layout {
         display: none;
         width: 100vw;
@@ -79,7 +77,6 @@
         flex-direction: row;
     }
 
-    /* Сайдбар (Список чатов) */
     .sidebar {
         width: 320px;
         height: 100%;
@@ -111,42 +108,20 @@
         transition: background-color 0.2s;
         border-bottom: 1px solid rgba(255,255,255,0.02);
     }
-    .contact:hover {
-        background-color: var(--hover-color);
-    }
-    .contact.active {
-        background-color: var(--accent-color);
-    }
+    .contact:hover { background-color: var(--hover-color); }
+    .contact.active { background-color: var(--accent-color); }
     .contact-avatar {
-        width: 45px;
-        height: 45px;
+        width: 45px; height: 45px;
         border-radius: 50%;
         background-color: #2b5278;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 16px;
-        color: white;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: bold; font-size: 16px; color: white;
     }
-    .contact-info {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-    .contact-name {
-        font-weight: 600;
-        font-size: 15px;
-    }
-    .contact-preview {
-        font-size: 13px;
-        color: var(--text-secondary);
-    }
-    .contact.active .contact-preview {
-        color: #cfe6ff;
-    }
+    .contact-info { display: flex; flex-direction: column; gap: 4px; }
+    .contact-name { font-weight: 600; font-size: 15px; }
+    .contact-preview { font-size: 13px; color: var(--text-secondary); }
+    .contact.active .contact-preview { color: #cfe6ff; }
 
-    /* Правая часть (Окно чата) */
     .chat-container {
         flex: 1;
         height: 100%;
@@ -164,11 +139,7 @@
         justify-content: space-between;
         align-items: center;
     }
-    .header-actions {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
     .header-btn {
         background: transparent;
         border: 1px solid rgba(255,255,255,0.2);
@@ -178,15 +149,10 @@
         border-radius: 6px;
         cursor: pointer;
     }
-    .header-btn:hover {
-        background: rgba(255,255,255,0.1);
-        color: #fff;
-    }
+    .header-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
     .status-dot {
         width: 8px; height: 8px; border-radius: 50%;
-        background: #e53935;
-        display: inline-block;
-        margin-right: 6px;
+        background: #e53935; display: inline-block; margin-right: 6px;
         transition: background 0.3s;
     }
     .status-dot.online { background: #4caf50; }
@@ -225,6 +191,17 @@
         white-space: pre-wrap;
     }
     .message-text a { color: #4ea4f3; text-decoration: underline; }
+    
+    /* Стили для картинок в сообщениях */
+    .message-image {
+        max-width: 100%;
+        max-height: 250px;
+        border-radius: 8px;
+        margin-top: 5px;
+        display: block;
+        cursor: pointer;
+    }
+
     .message-time {
         font-size: 10px;
         color: var(--text-secondary);
@@ -238,7 +215,7 @@
         gap: 10px;
         border-top: 1px solid rgba(255,255,255,0.05);
     }
-    .chat-input-area input {
+    .chat-input-area input[type="text"] {
         flex: 1;
         background-color: #0e1621;
         border: 1px solid rgba(255,255,255,0.08);
@@ -264,6 +241,18 @@
         text-align: center;
         margin-top: 40px;
     }
+    .emoji-picker {
+        background-color: #17212b;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        padding: 5px 12px;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    .emoji-picker:hover { background-color: rgba(255,255,255,0.1); }
 </style>
 </head>
 <body>
@@ -287,8 +276,8 @@
             <div class="contact active" data-room="teacher" data-title="Учитель">
                 <div class="contact-avatar" style="background-color: #e53935;">У</div>
                 <div class="contact-info">
-                    <div class="contact-name">Учитель</div>
-                    <div class="contact-preview">Школьный проект</div>
+                    <div class="contact-name">Малим</div>
+                    <div class="contact-preview">Дз кун</div>
                 </div>
             </div>
             <div class="contact" data-room="friend" data-title="Друг (Daler)">
@@ -301,8 +290,8 @@
             <div class="contact" data-room="family" data-title="Родные">
                 <div class="contact-avatar" style="background-color: #fb8c00;">Р</div>
                 <div class="contact-info">
-                    <div class="contact-name">Родные</div>
-                    <div class="contact-preview">Семейный чат</div>
+                    <div class="contact-name">Илон Маск</div>
+                    <div class="contact-preview">Можно в долг</div>
                 </div>
             </div>
         </div>
@@ -320,6 +309,9 @@
             <div class="empty-hint" id="emptyHint">Сообщений пока нет — напишите первым.</div>
         </div>
         <div class="chat-input-area">
+            <!-- Скрытый инпут для выбора файлов -->
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            <button type="button" id="attachBtn" class="emoji-picker" title="Отправить картинку">📎</button>
             <input type="text" id="userInput" placeholder="Введите сообщение..." maxlength="2000">
             <button id="sendButton">Отправить</button>
         </div>
@@ -351,6 +343,8 @@
     const clearChatBtn = document.getElementById("clearChatBtn");
     const statusDot = document.getElementById("statusDot");
     const contacts = document.querySelectorAll(".contact");
+    const imageInput = document.getElementById("imageInput");
+    const attachBtn = document.getElementById("attachBtn");
 
     function escapeHtml(str) {
         const div = document.createElement("div");
@@ -427,10 +421,18 @@
         allMessages.forEach((data) => {
             const div = document.createElement("div");
             div.className = "message" + (data.author === myName ? " own" : "");
-            const safeText = linkify(escapeHtml(data.text || ""));
+            
+            let contentHtml = '';
+            if (data.text) {
+                contentHtml += '<div class="message-text">' + linkify(escapeHtml(data.text)) + '</div>';
+            }
+            if (data.image) {
+                contentHtml += '<img src="' + data.image + '" class="message-image" alt="photo">';
+            }
+
             div.innerHTML =
                 '<div class="message-author">' + escapeHtml(data.author || "???") + '</div>' +
-                '<div class="message-text">' + safeText + '</div>' +
+                contentHtml +
                 '<div class="message-time">' + formatTime(data.ts) + '</div>';
             messageContainer.appendChild(div);
         });
@@ -443,31 +445,34 @@
 
         socket.emit("send_message", {
             author: myName,
-            text: text
+            text: text,
+            image: null
         });
 
         userInput.value = "";
     }
 
-    socket.on("connect", () => {
-        statusDot.classList.add("online");
-        if (myName) {
-            socket.emit("join_room", { name: myName, room: currentRoom });
-        }
+    // Обработка нажатия на скрепку
+    attachBtn.addEventListener("click", () => {
+        imageInput.click();
     });
 
-    socket.on("disconnect", () => {
-        statusDot.classList.remove("online");
-    });
+    // Обработка выбора картинки
+    imageInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    socket.on("init_messages", (msgs) => {
-        allMessages = msgs;
-        renderMessages();
-    });
-
-    socket.on("new_message", (msg) => {
-        allMessages.push(msg);
-        renderMessages();
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const base64Image = event.target.result;
+            socket.emit("send_message", {
+                author: myName,
+                text: "",
+                image: base64Image
+            });
+            imageInput.value = ""; // Сбрасываем инпут
+        };
+        reader.readAsDataURL(file);
     });
 
     sendButton.addEventListener("click", sendMessage);
