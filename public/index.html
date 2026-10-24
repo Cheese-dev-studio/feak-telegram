@@ -237,6 +237,8 @@
     function switchRoom(roomCode, roomName) {
         currentRoom = roomCode;
         roomTitle.textContent = roomName;
+        allMessages = []; // Очищаем локальный массив перед загрузкой истории новой комнаты
+        renderMessages();
         socket.emit("join_room", { name: myName, room: currentRoom });
     }
 
@@ -315,10 +317,12 @@
         userInput.value = "";
     }
 
+    // Обработка клика по скрепке
     attachBtn.addEventListener("click", () => {
         imageInput.click();
     });
 
+    // Обработка отправки картинки
     imageInput.addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -334,6 +338,28 @@
             imageInput.value = "";
         };
         reader.readAsDataURL(file);
+    });
+
+    // ОБРАБОТЧИКИ СОКЕТОВ (ВОТ ЭТОГО НЕ ХВАТАЛО!)
+    socket.on("connect", () => {
+        statusDot.classList.add("online");
+        if (myName && currentRoom) {
+            socket.emit("join_room", { name: myName, room: currentRoom });
+        }
+    });
+
+    socket.on("disconnect", () => {
+        statusDot.classList.remove("online");
+    });
+
+    socket.on("init_messages", (msgs) => {
+        allMessages = msgs || [];
+        renderMessages();
+    });
+
+    socket.on("new_message", (msg) => {
+        allMessages.push(msg);
+        renderMessages();
     });
 
     sendButton.addEventListener("click", sendMessage);
