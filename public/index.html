@@ -26,229 +26,95 @@
         display: flex;
         overflow: hidden;
     }
-
     .name-gate {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        width: 100vw;
+        display: flex; flex-direction: column; gap: 12px;
+        align-items: center; justify-content: center;
+        height: 100vh; width: 100vw;
         background-color: var(--bg-color);
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 100;
+        position: fixed; top: 0; left: 0; z-index: 100;
     }
-    .name-gate-box {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        width: 100%;
-        max-width: 320px;
-    }
+    .name-gate-box { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; }
     .name-gate input {
-        width: 100%;
-        background-color: var(--sidebar-bg);
-        border: 1px solid rgba(255,255,255,0.1);
-        padding: 12px 15px;
-        border-radius: 8px;
-        color: white;
-        font-size: 15px;
-        outline: none;
+        width: 100%; background-color: var(--sidebar-bg);
+        border: 1px solid rgba(255,255,255,0.1); padding: 12px 15px;
+        border-radius: 8px; color: white; font-size: 15px; outline: none;
     }
     .name-gate button {
-        width: 100%;
-        background-color: var(--accent-color);
-        color: white;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 15px;
+        width: 100%; background-color: var(--accent-color);
+        color: white; border: none; padding: 12px 20px;
+        border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px;
     }
-
-    .app-layout {
-        display: none;
-        width: 100vw;
-        height: 100vh;
-        flex-direction: row;
-    }
-
+    .app-layout { display: none; width: 100vw; height: 100vh; flex-direction: row; }
     .sidebar {
-        width: 320px;
-        height: 100%;
-        background-color: var(--sidebar-bg);
-        border-right: 1px solid rgba(255,255,255,0.05);
-        display: flex;
-        flex-direction: column;
+        width: 320px; height: 100%; background-color: var(--sidebar-bg);
+        border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column;
     }
     .sidebar-header {
-        padding: 20px;
-        font-weight: bold;
-        font-size: 16px;
+        padding: 20px; font-weight: bold; font-size: 16px;
         border-bottom: 1px solid rgba(255,255,255,0.05);
-        background-color: var(--message-bg);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        background-color: var(--message-bg); display: flex; justify-content: space-between; align-items: center;
     }
-    .contact-list {
-        flex: 1;
-        overflow-y: auto;
-    }
+    .contact-list { flex: 1; overflow-y: auto; }
     .contact {
-        padding: 15px 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        border-bottom: 1px solid rgba(255,255,255,0.02);
+        padding: 15px 20px; display: flex; align-items: center; gap: 12px;
+        cursor: pointer; transition: background-color 0.2s; border-bottom: 1px solid rgba(255,255,255,0.02);
     }
     .contact:hover { background-color: var(--hover-color); }
     .contact.active { background-color: var(--accent-color); }
     .contact-avatar {
-        width: 45px; height: 45px;
-        border-radius: 50%;
-        background-color: #2b5278;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 16px; color: white;
+        width: 45px; height: 45px; border-radius: 50%; background-color: #2b5278;
+        display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;
     }
     .contact-info { display: flex; flex-direction: column; gap: 4px; }
     .contact-name { font-weight: 600; font-size: 15px; }
     .contact-preview { font-size: 13px; color: var(--text-secondary); }
     .contact.active .contact-preview { color: #cfe6ff; }
-
-    .chat-container {
-        flex: 1;
-        height: 100%;
-        background-color: var(--chat-bg);
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
+    .chat-container { flex: 1; height: 100%; background-color: var(--chat-bg); display: flex; flex-direction: column; overflow: hidden; }
     .chat-header {
-        padding: 15px 20px;
-        background-color: var(--message-bg);
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-        font-weight: bold;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        padding: 15px 20px; background-color: var(--message-bg);
+        border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: bold;
+        display: flex; justify-content: space-between; align-items: center;
     }
     .header-actions { display: flex; gap: 10px; align-items: center; }
     .header-btn {
-        background: transparent;
-        border: 1px solid rgba(255,255,255,0.2);
-        color: var(--text-secondary);
-        font-size: 11px;
-        padding: 6px 10px;
-        border-radius: 6px;
-        cursor: pointer;
+        background: transparent; border: 1px solid rgba(255,255,255,0.2);
+        color: var(--text-secondary); font-size: 11px; padding: 6px 10px; border-radius: 6px; cursor: pointer;
     }
     .header-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
     .status-dot {
         width: 8px; height: 8px; border-radius: 50%;
-        background: #e53935; display: inline-block; margin-right: 6px;
-        transition: background 0.3s;
+        background: #e53935; display: inline-block; margin-right: 6px; transition: background 0.3s;
     }
     .status-dot.online { background: #4caf50; }
-    
-    .chat-messages {
-        flex: 1;
-        padding: 20px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
+    .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
     .message {
-        background-color: var(--message-bg);
-        padding: 10px 15px;
-        border-radius: 10px;
-        max-width: 70%;
-        align-self: flex-start;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        background-color: var(--message-bg); padding: 10px 15px;
+        border-radius: 10px; max-width: 70%; align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
-    .message.own {
-        align-self: flex-end;
-        background-color: var(--accent-color);
-    }
-    .message-author {
-        font-size: 12px;
-        color: #52b8ff;
-        margin-bottom: 4px;
-        font-weight: 600;
-    }
+    .message.own { align-self: flex-end; background-color: var(--accent-color); }
+    .message-author { font-size: 12px; color: #52b8ff; margin-bottom: 4px; font-weight: 600; }
     .message.own .message-author { color: #cfe6ff; }
-    .message-text {
-        font-size: 14px;
-        line-height: 1.4;
-        word-break: break-word;
-        white-space: pre-wrap;
-    }
+    .message-text { font-size: 14px; line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
     .message-text a { color: #4ea4f3; text-decoration: underline; }
-    
-    .message-image {
-        max-width: 100%;
-        max-height: 250px;
-        border-radius: 8px;
-        margin-top: 5px;
-        display: block;
-    }
-
-    .message-time {
-        font-size: 10px;
-        color: var(--text-secondary);
-        margin-top: 4px;
-        text-align: right;
-    }
+    .message-image { max-width: 100%; max-height: 250px; border-radius: 8px; margin-top: 5px; display: block; }
+    .message-time { font-size: 10px; color: var(--text-secondary); margin-top: 4px; text-align: right; }
     .chat-input-area {
-        padding: 15px;
-        background-color: #17212b;
-        display: flex;
-        gap: 10px;
-        border-top: 1px solid rgba(255,255,255,0.05);
+        padding: 15px; background-color: #17212b; display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,0.05);
     }
     .chat-input-area input[type="text"] {
-        flex: 1;
-        background-color: #0e1621;
-        border: 1px solid rgba(255,255,255,0.08);
-        padding: 12px 15px;
-        border-radius: 8px;
-        color: white;
-        font-size: 14px;
-        outline: none;
+        flex: 1; background-color: #0e1621; border: 1px solid rgba(255,255,255,0.08);
+        padding: 12px 15px; border-radius: 8px; color: white; font-size: 14px; outline: none;
     }
     .chat-input-area button {
-        background-color: var(--accent-color);
-        color: white;
-        border: none;
-        padding: 0 24px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
+        background-color: var(--accent-color); color: white; border: none;
+        padding: 0 24px; border-radius: 8px; cursor: pointer; font-weight: bold;
     }
     .chat-input-area button:hover { background-color: #366596; }
-    .empty-hint {
-        color: var(--text-secondary);
-        font-size: 13px;
-        text-align: center;
-        margin-top: 40px;
-    }
+    .empty-hint { color: var(--text-secondary); font-size: 13px; text-align: center; margin-top: 40px; }
     .emoji-picker {
-        background-color: #17212b;
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 8px;
-        padding: 5px 12px;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
+        background-color: #17212b; border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px; padding: 5px 12px; font-size: 18px;
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
     }
     .emoji-picker:hover { background-color: rgba(255,255,255,0.1); }
 </style>

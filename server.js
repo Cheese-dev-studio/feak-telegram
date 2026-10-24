@@ -8,7 +8,6 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
-// Храним сообщения отдельно для каждой комнаты
 const roomMessages = {};
 
 io.on('connection', (socket) => {
@@ -22,7 +21,6 @@ io.on('connection', (socket) => {
             roomMessages[currentRoom] = [];
         }
 
-        // Отправляем историю сообщений только этой комнаты
         socket.emit('init_messages', roomMessages[currentRoom]);
     });
 
@@ -31,7 +29,8 @@ io.on('connection', (socket) => {
 
         const msgData = {
             author: data.author,
-            text: data.text,
+            text: data.text || "",
+            image: data.image || null,
             ts: Date.now()
         };
 
@@ -40,7 +39,6 @@ io.on('connection', (socket) => {
         }
         roomMessages[currentRoom].push(msgData);
 
-        // Отправляем сообщение ТОЛЬКО участникам этой комнаты
         io.to(currentRoom).emit('new_message', msgData);
     });
 
