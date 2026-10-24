@@ -3,45 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Feak Telegram Rooms</title>
+<title>Feak Telegram</title>
 <script src="/socket.io/socket.io.js"></script>
 <style>
     :root {
         --bg-color: #0e1621;
         --chat-bg: #0e1621;
+        --sidebar-bg: #17212b;
         --text-color: #f5f5f5;
         --text-secondary: #8293a1;
         --accent-color: #2b5278;
         --message-bg: #182533;
+        --hover-color: rgba(255,255,255,0.07);
         color-scheme: dark;
     }
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
+    html, body { height: 100%; margin: 0; }
     body {
-        margin: 0;
         background-color: var(--bg-color);
         color: var(--text-color);
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-        padding-top: calc(20px + env(safe-area-inset-top, 0px));
-        padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        overflow: hidden;
     }
+
+    /* Экран ввода имени */
     .name-gate {
         display: flex;
         flex-direction: column;
         gap: 12px;
         align-items: center;
         justify-content: center;
-        height: 100%;
+        height: 100vh;
+        width: 100vw;
+        background-color: var(--bg-color);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
+    }
+    .name-gate-box {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
         width: 100%;
         max-width: 320px;
     }
     .name-gate input {
         width: 100%;
-        background-color: #17212b;
+        background-color: var(--sidebar-bg);
         border: 1px solid rgba(255,255,255,0.1);
         padding: 12px 15px;
         border-radius: 8px;
@@ -60,19 +70,93 @@
         font-weight: bold;
         font-size: 15px;
     }
-    .chat-container {
-        width: 100%;
-        max-width: 600px;
-        height: 85vh;
-        background-color: var(--chat-bg);
-        border-radius: 12px;
+
+    /* Главный макет (Сайдбар + Чат) */
+    .app-layout {
         display: none;
+        width: 100vw;
+        height: 100vh;
+        flex-direction: row;
+    }
+
+    /* Сайдбар (Список чатов) */
+    .sidebar {
+        width: 320px;
+        height: 100%;
+        background-color: var(--sidebar-bg);
+        border-right: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        flex-direction: column;
+    }
+    .sidebar-header {
+        padding: 20px;
+        font-weight: bold;
+        font-size: 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        background-color: var(--message-bg);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .contact-list {
+        flex: 1;
+        overflow-y: auto;
+    }
+    .contact {
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        border-bottom: 1px solid rgba(255,255,255,0.02);
+    }
+    .contact:hover {
+        background-color: var(--hover-color);
+    }
+    .contact.active {
+        background-color: var(--accent-color);
+    }
+    .contact-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background-color: #2b5278;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        color: white;
+    }
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .contact-name {
+        font-weight: 600;
+        font-size: 15px;
+    }
+    .contact-preview {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+    .contact.active .contact-preview {
+        color: #cfe6ff;
+    }
+
+    /* Правая часть (Окно чата) */
+    .chat-container {
+        flex: 1;
+        height: 100%;
+        background-color: var(--chat-bg);
+        display: flex;
         flex-direction: column;
         overflow: hidden;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
     .chat-header {
-        padding: 12px 20px;
+        padding: 15px 20px;
         background-color: var(--message-bg);
         border-bottom: 1px solid rgba(255,255,255,0.05);
         font-weight: bold;
@@ -90,7 +174,7 @@
         border: 1px solid rgba(255,255,255,0.2);
         color: var(--text-secondary);
         font-size: 11px;
-        padding: 4px 8px;
+        padding: 6px 10px;
         border-radius: 6px;
         cursor: pointer;
     }
@@ -105,9 +189,8 @@
         margin-right: 6px;
         transition: background 0.3s;
     }
-    .status-dot.online {
-        background: #4caf50;
-    }
+    .status-dot.online { background: #4caf50; }
+    
     .chat-messages {
         flex: 1;
         padding: 20px;
@@ -120,7 +203,7 @@
         background-color: var(--message-bg);
         padding: 10px 15px;
         border-radius: 10px;
-        max-width: 80%;
+        max-width: 70%;
         align-self: flex-start;
         box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
@@ -153,12 +236,13 @@
         background-color: #17212b;
         display: flex;
         gap: 10px;
+        border-top: 1px solid rgba(255,255,255,0.05);
     }
     .chat-input-area input {
         flex: 1;
-        background-color: #17212b;
+        background-color: #0e1621;
         border: 1px solid rgba(255,255,255,0.08);
-        padding: 10px 15px;
+        padding: 12px 15px;
         border-radius: 8px;
         color: white;
         font-size: 14px;
@@ -168,7 +252,7 @@
         background-color: var(--accent-color);
         color: white;
         border: none;
-        padding: 10px 20px;
+        padding: 0 24px;
         border-radius: 8px;
         cursor: pointer;
         font-weight: bold;
@@ -180,125 +264,97 @@
         text-align: center;
         margin-top: 40px;
     }
-
-    
-        .sidebar {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 300px;
-            height: 100vh;
-            background-color: #17212b;
-            border-right: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            background-color: var(--message-bg);
-        }
-
-        .contact {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            cursor: pointer;
-            transition: background-color 0.2s;
-
-        }
-
-        .contact:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
-
-        .contact-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-
-        .but-ton10{
-            background-color: #17212b;
-            border: none;
-            width: 300px;
-        }
 </style>
 </head>
 <body>
 
-    <div class="sidebar" id="sidebar1">
-        <div class="sidebar-header">Контакты</div>
-        <button class="but-ton10" id="button10"><div class="contact" id="canal1"><img src="https://via.placeholder.com/40" alt="Cheese" class="contact-avatar" id="avatar1"> Cheese</div></button>
-        <button class="but-ton10" id="button11"><div class="contact" id="canal2"><img src="https://via.placeholder.com/40" alt="User2" class="contact-avatar" id="avatar2"> 𝒟𝒶𝓁𝑒𝓇</div></button>
-        <button class="but-ton10" id="button12"><div class="contact" id="canal3"><img src="https://via.placeholder.com/40" alt="User3" class="contact-avatar" id="avatar3"> Jav0h1r</div></button>
-    </div>
-
+<!-- Экран входа -->
 <div class="name-gate" id="nameGate">
-    <div style="font-weight:bold; font-size:18px; margin-bottom:4px;">Вход в чат</div>
-    <input type="text" id="nameInput" placeholder="Ваше имя" maxlength="30">
-    <input type="text" id="roomInput" placeholder="Название комнаты / секретный код" maxlength="30">
-    <button id="nameSubmit">Войти</button>
-    <div id="nameError" style="color:#ff6b6b; font-size:13px;"></div>
+    <div class="name-gate-box">
+        <div style="font-weight:bold; font-size:20px; margin-bottom:4px; text-align:center;">Вход в Feak Telegram</div>
+        <input type="text" id="nameInput" placeholder="Ваше имя" maxlength="30">
+        <button id="nameSubmit">Войти</button>
+        <div id="nameError" style="color:#ff6b6b; font-size:13px; text-align:center;"></div>
+    </div>
 </div>
 
-<div class="chat-container" id="chatContainer">
-    <div class="chat-header">
-        <span><span class="status-dot" id="statusDot"></span>Комната: <span id="roomLabel" style="color:#52b8ff;"></span></span>
-        <div class="header-actions">
-            <span id="meLabel" style="font-weight:normal; color: var(--text-secondary); font-size:13px;"></span>
-            <button class="header-btn" id="changeNameBtn">Сменить комнату</button>
-            <button class="header-btn" id="clearChatBtn" title="Очистить историю">Очистить</button>
+<!-- Основное приложение с боковой панелью -->
+<div class="app-layout" id="appLayout">
+    <!-- Сайдбар с чатами -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span>Чаты</span>
+            <span id="meLabel" style="font-size: 12px; color: var(--text-secondary); font-weight: normal;"></span>
+        </div>
+        <div class="contact-list">
+            <div class="contact active" data-room="teacher" data-title="Учитель">
+                <div class="contact-avatar" style="background-color: #e53935;">👨‍🏫</div>
+                <div class="contact-info">
+                    <div class="contact-name">Учитель</div>
+                    <div class="contact-preview">Школьный проект</div>
+                </div>
+            </div>
+            <div class="contact" data-room="friend" data-title="Друг (Daler)">
+                <div class="contact-avatar" style="background-color: #43a047;">👨‍💻</div>
+                <div class="contact-info">
+                    <div class="contact-name">Daler</div>
+                    <div class="contact-preview">Личный чат</div>
+                </div>
+            </div>
+            <div class="contact" data-room="family" data-title="Родные">
+                <div class="contact-avatar" style="background-color: #fb8c00;">🏠</div>
+                <div class="contact-info">
+                    <div class="contact-name">Родные</div>
+                    <div class="contact-preview">Семейный чат</div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="chat-messages" id="messageContainer">
-        <div class="empty-hint" id="emptyHint">Сообщений пока нет — напишите первым.</div>
-    </div>
-    <div class="chat-input-area">
-        <input type="text" id="userInput" placeholder="Сообщение..." maxlength="2000">
-        <button id="sendButton">Отправить</button>
+
+    <!-- Окно выбранного чата -->
+    <div class="chat-container">
+        <div class="chat-header">
+            <span><span class="status-dot" id="statusDot"></span>Чат: <span id="roomTitle" style="color:#52b8ff;">Учитель</span></span>
+            <div class="header-actions">
+                <button class="header-btn" id="changeNameBtn">Сменить имя</button>
+                <button class="header-btn" id="clearChatBtn">Очистить</button>
+            </div>
+        </div>
+        <div class="chat-messages" id="messageContainer">
+            <div class="empty-hint" id="emptyHint">Сообщений пока нет — напишите первым.</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Введите сообщение..." maxlength="2000">
+            <button id="sendButton">Отправить</button>
+        </div>
     </div>
 </div>
 
 <script>
 (function () {
-    const NAME_KEY = "simple_chat_display_name";
-    const ROOM_KEY = "simple_chat_room_name";
+    const NAME_KEY = "feak_tg_name";
     const socket = io();
 
     let allMessages = [];
     let myName = localStorage.getItem(NAME_KEY) || "";
-    let myRoom = localStorage.getItem(ROOM_KEY) || "";
+    let currentRoom = "teacher"; // Комната по умолчанию
 
     const nameGate = document.getElementById("nameGate");
     const nameInput = document.getElementById("nameInput");
-    const roomInput = document.getElementById("roomInput");
     const nameSubmit = document.getElementById("nameSubmit");
     const nameError = document.getElementById("nameError");
-    const chatContainer = document.getElementById("chatContainer");
+    
+    const appLayout = document.getElementById("appLayout");
+    const meLabel = document.getElementById("meLabel");
+    const roomTitle = document.getElementById("roomTitle");
     const messageContainer = document.getElementById("messageContainer");
     const emptyHint = document.getElementById("emptyHint");
     const userInput = document.getElementById("userInput");
     const sendButton = document.getElementById("sendButton");
-    const meLabel = document.getElementById("meLabel");
-    const roomLabel = document.getElementById("roomLabel");
     const changeNameBtn = document.getElementById("changeNameBtn");
     const clearChatBtn = document.getElementById("clearChatBtn");
     const statusDot = document.getElementById("statusDot");
-    const sidebar1 = document.getElementById("sidebar1");
-    const canal1 = document.getElementById("canal1");
-    const canal2 = document.getElementById("canal2");
-    const canal3 = document.getElementById("canal3");
-    const avatar1 = document.getElementById("avatar1");
-    const avatar2 = document.getElementById("avatar2");
-    const avatar3 = document.getElementById("avatar3");
-    const button10 = document.getElementById("button10");
-    const button11 = document.getElementById("button11");
-    const button12 = document.getElementById("button12");
+    const contacts = document.querySelectorAll(".contact");
 
     function escapeHtml(str) {
         const div = document.createElement("div");
@@ -316,65 +372,53 @@
         return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     }
 
-    function enterChat(name, room) {
+    function enterApp(name) {
         myName = name;
-        myRoom = room;
         localStorage.setItem(NAME_KEY, name);
-        localStorage.setItem(ROOM_KEY, room);
-        
         nameGate.style.display = "none";
-        chatContainer.style.display = "flex";
-        button10.style.display = "flex";
-        button11.style.display = "flex";
-        button12.style.display = "flex";
-        sidebar1.style.display = "flex";
-        canal1.style.display = "flex";
-        canal2.style.display = "flex";
-        canal3.style.display = "flex";
-        avatar1.style.display = "flex";
-        avatar2.style.display = "flex";
-        avatar3.style.display = "flex";
-        meLabel.textContent = "вы: " + name;
-        roomLabel.textContent = room;
-
-        socket.emit("join_room", { name: name, room: room });
+        appLayout.style.display = "flex";
+        meLabel.textContent = name;
+        switchRoom(currentRoom, "Учитель");
     }
+
+    function switchRoom(roomCode, roomName) {
+        currentRoom = roomCode;
+        roomTitle.textContent = roomName;
+        socket.emit("join_room", { name: myName, room: currentRoom });
+    }
+
+    // Клик по контактам в сайдбаре
+    contacts.forEach(contact => {
+        contact.addEventListener("click", () => {
+            contacts.forEach(c => c.classList.remove("active"));
+            contact.classList.add("active");
+            const roomCode = contact.getAttribute("data-room");
+            const roomTitleText = contact.getAttribute("data-title");
+            switchRoom(roomCode, roomTitleText);
+        });
+    });
 
     nameSubmit.addEventListener("click", () => {
         const name = nameInput.value.trim();
-        const room = roomInput.value.trim();
-
         if (!name) {
-            nameError.textContent = "Введите имя";
+            nameError.textContent = "Пожалуйста, введите ваше имя";
             return;
         }
-        if (!room) {
-            nameError.textContent = "Введите название комнаты";
-            return;
-        }
+        enterApp(name);
+    });
 
-        enterChat(name, room);
+    nameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") nameSubmit.click();
     });
 
     changeNameBtn.addEventListener("click", () => {
-        chatContainer.style.display = "none";
-        sidebar1.style.display = "none";
+        appLayout.style.display = "none";
         nameGate.style.display = "flex";
-        canal1.style.display = "none";
-        canal2.style.display = "none";
-        canal3.style.display = "none";
-        avatar1.style.display = "none";
-        avatar2.style.display = "none";
-        avatar3.style.display = "none";
-        button10.style.display = "none";
-        button11.style.display = "none";
-        button12.style.display = "none";
         nameInput.value = myName;
-        roomInput.value = myRoom;
     });
 
     clearChatBtn.addEventListener("click", () => {
-        if (confirm("Вы уверены, что хотите очистить всю историю в этой комнате?")) {
+        if (confirm("Очистить историю сообщений в этом чате?")) {
             socket.emit("clear_messages");
         }
     });
@@ -412,8 +456,8 @@
 
     socket.on("connect", () => {
         statusDot.classList.add("online");
-        if (myName && myRoom) {
-            socket.emit("join_room", { name: myName, room: myRoom });
+        if (myName) {
+            socket.emit("join_room", { name: myName, room: currentRoom });
         }
     });
 
@@ -436,8 +480,8 @@
         if (e.key === "Enter") sendMessage();
     });
 
-    if (myName && myRoom) {
-        enterChat(myName, myRoom);
+    if (myName) {
+        enterApp(myName);
     }
 })();
 </script>
