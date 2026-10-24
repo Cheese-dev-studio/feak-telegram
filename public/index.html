@@ -268,7 +268,6 @@
 </head>
 <body>
 
-<!-- Экран входа -->
 <div class="name-gate" id="nameGate">
     <div class="name-gate-box">
         <div style="font-weight:bold; font-size:20px; margin-bottom:4px; text-align:center;">Вход в Feak Telegram</div>
@@ -278,9 +277,7 @@
     </div>
 </div>
 
-<!-- Основное приложение с боковой панелью -->
 <div class="app-layout" id="appLayout">
-    <!-- Сайдбар с чатами -->
     <div class="sidebar">
         <div class="sidebar-header">
             <span>Чаты</span>
@@ -288,21 +285,21 @@
         </div>
         <div class="contact-list">
             <div class="contact active" data-room="teacher" data-title="Учитель">
-                <div class="contact-avatar" style="background-color: #e53935;">👨‍🏫</div>
+                <div class="contact-avatar" style="background-color: #e53935;">У</div>
                 <div class="contact-info">
                     <div class="contact-name">Учитель</div>
                     <div class="contact-preview">Школьный проект</div>
                 </div>
             </div>
             <div class="contact" data-room="friend" data-title="Друг (Daler)">
-                <div class="contact-avatar" style="background-color: #43a047;">👨‍💻</div>
+                <div class="contact-avatar" style="background-color: #43a047;">D</div>
                 <div class="contact-info">
                     <div class="contact-name">Daler</div>
                     <div class="contact-preview">Личный чат</div>
                 </div>
             </div>
             <div class="contact" data-room="family" data-title="Родные">
-                <div class="contact-avatar" style="background-color: #fb8c00;">🏠</div>
+                <div class="contact-avatar" style="background-color: #fb8c00;">Р</div>
                 <div class="contact-info">
                     <div class="contact-name">Родные</div>
                     <div class="contact-preview">Семейный чат</div>
@@ -311,7 +308,6 @@
         </div>
     </div>
 
-    <!-- Окно выбранного чата -->
     <div class="chat-container">
         <div class="chat-header">
             <span><span class="status-dot" id="statusDot"></span>Чат: <span id="roomTitle" style="color:#52b8ff;">Учитель</span></span>
@@ -337,7 +333,7 @@
 
     let allMessages = [];
     let myName = localStorage.getItem(NAME_KEY) || "";
-    let currentRoom = "teacher"; // Комната по умолчанию
+    let currentRoom = "teacher"; 
 
     const nameGate = document.getElementById("nameGate");
     const nameInput = document.getElementById("nameInput");
@@ -387,7 +383,6 @@
         socket.emit("join_room", { name: myName, room: currentRoom });
     }
 
-    // Клик по контактам в сайдбаре
     contacts.forEach(contact => {
         contact.addEventListener("click", () => {
             contacts.forEach(c => c.classList.remove("active"));
