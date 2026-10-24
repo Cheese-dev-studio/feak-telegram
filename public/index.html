@@ -452,12 +452,10 @@
         userInput.value = "";
     }
 
-    // Обработка нажатия на скрепку
     attachBtn.addEventListener("click", () => {
         imageInput.click();
     });
 
-    // Обработка выбора картинки
     imageInput.addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -470,7 +468,7 @@
                 text: "",
                 image: base64Image
             });
-            imageInput.value = ""; // Сбрасываем инпут
+            imageInput.value = ""; 
         };
         reader.readAsDataURL(file);
     });
