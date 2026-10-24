@@ -192,14 +192,12 @@
     }
     .message-text a { color: #4ea4f3; text-decoration: underline; }
     
-    /* Стили для картинок в сообщениях */
     .message-image {
         max-width: 100%;
         max-height: 250px;
         border-radius: 8px;
         margin-top: 5px;
         display: block;
-        cursor: pointer;
     }
 
     .message-time {
@@ -309,7 +307,6 @@
             <div class="empty-hint" id="emptyHint">Сообщений пока нет — напишите первым.</div>
         </div>
         <div class="chat-input-area">
-            <!-- Скрытый инпут для выбора файлов -->
             <input type="file" id="imageInput" accept="image/*" style="display: none;">
             <button type="button" id="attachBtn" class="emoji-picker" title="Отправить картинку">📎</button>
             <input type="text" id="userInput" placeholder="Введите сообщение..." maxlength="2000">
@@ -468,7 +465,7 @@
                 text: "",
                 image: base64Image
             });
-            imageInput.value = ""; 
+            imageInput.value = "";
         };
         reader.readAsDataURL(file);
     });
